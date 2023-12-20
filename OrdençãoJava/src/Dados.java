@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class Dados {
 
@@ -58,8 +59,7 @@ public class Dados {
         return lista;
     }
 
-     //mergesort
-     public static List<Integer> mergeSort(List<Integer> lista) {
+    public static List<Integer> mergeSort(List<Integer> lista) {
         int tamanho = lista.size();
 
         if (tamanho < 2) {
@@ -67,67 +67,94 @@ public class Dados {
         }
 
         int meio = tamanho / 2;
-        List<Integer> esquerda = lista.subList(0, meio);
-        List<Integer> direita = lista.subList(meio, tamanho);
 
-        return merge(mergeSort(esquerda), mergeSort(direita));
-    }
+        List<Integer> listaEsquerda = new ArrayList<>(lista.subList(0, meio));
+        List<Integer> listaDireita = new ArrayList<>(lista.subList(meio, tamanho));
 
-    private static List<Integer> merge(List<Integer> esquerda, List<Integer> direita) {
-        int tamanhoEsquerda = esquerda.size();
-        int tamanhoDireita = direita.size();
-        int i = 0;
-        int j = 0;
-        List<Integer> lista = new ArrayList<>();
+        mergeSort(listaEsquerda);
+        mergeSort(listaDireita);
 
-        while (i < tamanhoEsquerda && j < tamanhoDireita) {
-            if (esquerda.get(i) <= direita.get(j)) {
-                lista.add(esquerda.get(i));
-                i++;
-            } else {
-                lista.add(direita.get(j));
-                j++;
-            }
-        }
-
-        while (i < tamanhoEsquerda) {
-            lista.add(esquerda.get(i));
-            i++;
-        }
-
-        while (j < tamanhoDireita) {
-            lista.add(direita.get(j));
-            j++;
-        }
+        merge(lista, listaEsquerda, listaDireita);
 
         return lista;
     }
 
-     //quicksort
-     public static List<Integer> quickSort(List<Integer> lista) {
-        int tamanho = lista.size();
+    private static void merge(List<Integer> lista, List<Integer> listaEsquerda, List<Integer> listaDireita) {
+        int tamanhoListaEsquerda = listaEsquerda.size();
+        int tamanhoListaDireita = listaDireita.size();
 
-        if (tamanho < 2) {
-            return lista;
+        int indiceListaEsquerda = 0;
+        int indiceListaDireita = 0;
+        int indiceLista = 0;
+
+        while (indiceListaEsquerda < tamanhoListaEsquerda && indiceListaDireita < tamanhoListaDireita) {
+            if (listaEsquerda.get(indiceListaEsquerda) <= listaDireita.get(indiceListaDireita)) {
+                lista.set(indiceLista, listaEsquerda.get(indiceListaEsquerda));
+                indiceListaEsquerda++;
+            } else {
+                lista.set(indiceLista, listaDireita.get(indiceListaDireita));
+                indiceListaDireita++;
+            }
+
+            indiceLista++;
         }
 
-        int pivo = lista.get(0);
-        List<Integer> menores = new ArrayList<>();
-        List<Integer> maiores = new ArrayList<>();
+        while (indiceListaEsquerda < tamanhoListaEsquerda) {
+            lista.set(indiceLista, listaEsquerda.get(indiceListaEsquerda));
+            indiceListaEsquerda++;
+            indiceLista++;
+        }
 
-        for (int i = 1; i < tamanho; i++) {
-            if (lista.get(i) <= pivo) {
-                menores.add(lista.get(i));
-            } else {
-                maiores.add(lista.get(i));
+        while (indiceListaDireita < tamanhoListaDireita) {
+            lista.set(indiceLista, listaDireita.get(indiceListaDireita));
+            indiceListaDireita++;
+            indiceLista++;
+        }
+    }
+
+    public static void quickSort(List<Integer> lista) {
+        Stack<Integer> pilha = new Stack<>();
+        pilha.push(0);
+        pilha.push(lista.size() - 1);
+
+        while (!pilha.isEmpty()) {
+            int fim = pilha.pop();
+            int inicio = pilha.pop();
+
+            int indicePivo = particionar(lista, inicio, fim);
+
+            if (indicePivo - 1 > inicio) {
+                pilha.push(inicio);
+                pilha.push(indicePivo - 1);
+            }
+
+            if (indicePivo + 1 < fim) {
+                pilha.push(indicePivo + 1);
+                pilha.push(fim);
+            }
+        }
+    }
+
+    private static int particionar(List<Integer> lista, int inicio, int fim) {
+        int pivo = lista.get(fim);
+        int indicePivo = inicio - 1;
+
+        for (int indiceAtual = inicio; indiceAtual < fim; indiceAtual++) {
+            if (lista.get(indiceAtual) <= pivo) {
+                indicePivo++;
+                trocarElementos(lista, indicePivo, indiceAtual);
             }
         }
 
-        List<Integer> listaOrdenada = quickSort(menores);
-        listaOrdenada.add(pivo);
-        listaOrdenada.addAll(quickSort(maiores));
+        trocarElementos(lista, indicePivo + 1, fim);
 
-        return listaOrdenada;
+        return indicePivo + 1;
+    }
+
+    private static void trocarElementos(List<Integer> lista, int indiceA, int indiceB) {
+        int temp = lista.get(indiceA);
+        lista.set(indiceA, lista.get(indiceB));
+        lista.set(indiceB, temp);
     }
 
         //countingsort

@@ -27,7 +27,7 @@ public class App {
 
         // Teste com o Counting Sort
         testarOrdenacao("Counting Sort", new ArrayList<>(numerosNaoOrdenados));
-        
+
     }
 
     private static void testarOrdenacao(String metodo, List<Integer> numeros) {
@@ -45,13 +45,13 @@ public class App {
             case "Insertion Sort":
                 Dados.insertionSort(numeros);
                 break;
-                case "Merge Sort":
+            case "Merge Sort":
                 Dados.mergeSort(numeros);
                 break;
-                case "Quick Sort":
+            case "Quick Sort":
                 Dados.quickSort(numeros);
                 break;
-                case "Counting Sort":
+            case "Counting Sort":
                 Dados.countingSort(numeros);
                 break;
         }
